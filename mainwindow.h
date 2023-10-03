@@ -67,18 +67,22 @@ private:
     QLabel *lblCore, *lblSW, *lblHW, *lblCells;
     QLabel *lblStatus;
     QTableWidgetItem *m_cells[8];
-    QChart *m_chartCurrent, *m_chartVoltage, *m_chartCapacity, *m_chartTempExt, *m_chartTempInt;
+    QChart *m_chartCurrent, *m_chartVoltage, *m_chartCapacity, *m_chartTemp, *m_chartCellsVoltage;
     QLineSeries *m_seriesCurrent, *m_seriesVoltage, *m_seriesCapacity,
-                *m_seriesTempExt, *m_seriesTempInt;
+                *m_seriesTempExt, *m_seriesTempInt, *m_seriesCellsVoltage[8];
 
     double m_minCurrent = 100.0, m_maxCurrent = 0.0,
-           m_minVoltage = 100.0, m_maxVoltage = 0.0;
+           m_minVoltage = 100.0, m_maxVoltage = 0.0,
+           m_minCellVoltage = 100.0, m_maxCellVoltage = 0.0;
     int m_minCapacity = 10000, m_maxCapacity = 0,
         m_minTempExt = 80, m_maxTempExt = 0,
-        m_minTempInt = 80, m_maxTempInt = 0;
+        m_minTempInt = 80, m_maxTempInt = 0,
+        m_minTime = 100000;
 
     b6::Device *m_dev = nullptr;
     bool m_charging = false;
+    bool m_extTempAvailable = false;
+    bool m_CellsAvailable = false;
 
     void m_createDevice();
     void m_loadSysInfo();
