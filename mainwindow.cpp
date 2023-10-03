@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
-    timer->start(std::chrono::milliseconds(400));
+    timer->start(std::chrono::milliseconds(1000));
 
     lblCore = new QLabel(this);
     lblCore->setText("NOT CONNECTED!");
@@ -355,15 +355,17 @@ void MainWindow::m_loadChargeInfo() {
                 m_cells[i]->setText(QString("%1V").arg(cellV > 0.4 ? cellV : 0.0, 0, 'f', 3));
             }
             if(!m_CellsAvailable){
-                m_CellsAvailable = true;
                 for (int i = 0; i < m_dev->getCellCount(); i++) {
                     double cellV = (double)(info.cells[i]) / 1000.0;
                     if(cellV > 0.4){
                         m_chartCellsVoltage->addSeries(m_seriesCellsVoltage[i]);
+                        m_CellsAvailable = true;
                     }
                 }
-                m_chartCellsVoltage->createDefaultAxes();
-                m_chartCellsVoltage->axes(Qt::Vertical).at(0)->setRange(2.0, 4.5);
+                if(m_CellsAvailable){
+                    m_chartCellsVoltage->createDefaultAxes();
+                    m_chartCellsVoltage->axes(Qt::Vertical).at(0)->setRange(2.0, 4.5);
+                }
             }
             if(m_CellsAvailable){
                 m_chartCellsVoltage->axes(Qt::Horizontal).at(0)->setRange(m_minTime, info.time);
@@ -504,11 +506,14 @@ void MainWindow::m_startCharging() {
         m_seriesTempExt->clear();
         m_seriesTempInt->clear();
 
-        for (int i = 0; i < 8; i++) {
-            m_seriesCellsVoltage[i]->clear();
-        }
         m_chartCellsVoltage->removeAllSeries();
+        for (int i = 0; i < 8; i++) {
+            m_seriesCellsVoltage[i] = new QLineSeries();
+            m_seriesCellsVoltage[i]->setName(QString("Cell %1 (V)").arg(i+1));
+        }
         m_CellsAvailable = false;
+        m_maxCellVoltage = 0;
+        m_minCellVoltage = 10;
 
         m_dev->startCharging(profile);
         m_charging = true;
