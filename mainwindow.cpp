@@ -330,6 +330,7 @@ void MainWindow::m_loadChargeInfo() {
                 if(!m_extTempAvailable){
                     m_extTempAvailable = true;
                     m_chartTemp->addSeries(m_seriesTempExt);
+                    m_chartTemp->createDefaultAxes();
                 }
                 m_seriesTempExt->append(info.time, info.tempExt);
             }
